@@ -90,7 +90,8 @@
           //alpha: true,
           antialias: true,
         });
-        renderer.physicallyCorrectLights = true;
+        renderer.useLegacyLights;
+        //renderer.physicallyCorrectLights = true;
         renderer.setSize(c.offsetWidth, c.offsetHeight);
         c.appendChild(renderer.domElement);
 
