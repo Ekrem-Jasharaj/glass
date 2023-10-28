@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="main.css" />
+    <title>Static Template</title>
+    <style>
+      html,
+      body {
+        box-sizing: border;
+        margin: 0px;
+        padding: 0px;
+        overflow: hidden;
+        user-select: none;
+      }
+      button {
+        position: absolute;
+        margin-top: 2%;
+        margin-left: 5%;
+        background-color: rgb(21, 21, 21);
+        color: white;
+        border: 0px;
+        outline: 0px;
+        cursor: pointer;
+        font-weight: bold;
+        width: 10%;
+        height: 3vh;
+        border-radius: 3px;
+      }
+
+      button:nth-of-type(2) {
+        margin-left: 20%;
+      }
+
+      button:last-of-type {
+        margin-left: 35%;
+      }
+
+      #perspektiva {
+        position: absolute;
+        margin-top: 6%;
+        width: 100%;
+        display: block;
+        font-size: 400%;
+        font-family: verdana;
+        color: white;
+        padding-left: 5%;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="play">Play</button>
+    <button id="stop">
+      Stop
+    </button>
+    <button id="fullscreen">Full screen</button>
+    <div id="perspektiva">Perspektiva</div>
+    <div id="c"></div>
+    <script type="module">
+      import * as THREE from "/js/Three/three.module.js";
+      import { OrbitControls } from "/js/Three/OrbitControls.js";
+      let fullScreen = document.getElementById("fullscreen");
+      let elem = document.getElementById("c");
+      fullScreen.addEventListener("click", function () {
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+          /* Safari */
+          elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+          /* IE11 */
+          elem.msRequestFullscreen();
+        }
+      });
+
+      function main() {
+        const c = document.querySelector("#c");
+
+        //RENDERER
+        const renderer = new THREE.WebGLRenderer({
+          //alpha: true,
+          antialias: true
+        });
+        renderer.physicallyCorrectLights = true;
+        renderer.setSize(c.offsetWidth, c.offsetHeight);
+        c.appendChild(renderer.domElement);
+
+        //SCEEN
+        const scene = new THREE.Scene();
+
+        let loader = new THREE.TextureLoader();
+        let em = loader.load("img/em.jpg");
+        em.mapping = THREE.EquirectangularReflectionMapping;
+        scene.environment = em;
+        scene.background = em;
+
+        //CAMERA
+        let camera = new THREE.PerspectiveCamera(
+          75,
+          c.offsetWidth / c.offsetHeight,
+          0.1,
+          10000
+        );
+        camera.position.x = 50;
+        camera.position.y = -4;
+        camera.position.z = 2;
+        camera.lookAt(0, 0, 0);
+
+        //LIGHTS
+        const light_0 = new THREE.AmbientLight(`white`, 2);
+        scene.add(light_0);
+
+        //
+
+        ////////////////////////////////////////////////////////////////
+
+        //GEOMETRY
+        let geometry_0 = new THREE.BoxGeometry(20, 20, 20);
+        let geometry_1 = new THREE.DodecahedronGeometry(100, 0);
+        let geometry_2 = new THREE.IcosahedronGeometry(700, 0);
+
+        //MATERIAL
+        let material_0 = new THREE.MeshPhysicalMaterial({
+          color: "red",
+          transmission: 1,
+          roughness: 0,
+          ior: 1.7,
+          thickness: 0.5,
+          clearcoat: 1,
+          envMap: em,
+          side: 2,
+          transparent: true,
+          opacity: 1,
+          sheen: 1,
+          sheenRoughness: 1,
+          sheenColor: 0xffffff
+        });
+        let material_1 = new THREE.MeshPhysicalMaterial({
+          color: "green",
+          transmission: 1,
+          roughness: 0,
+          ior: 1.7,
+          thickness: 0.5,
+          clearcoat: 1,
+          envMap: em,
+          side: 2,
+          transparent: true,
+          opacity: 1,
+          sheen: 1,
+          sheenRoughness: 0,
+          sheenColor: 0xffffff
+        });
+        let material_2 = new THREE.MeshPhysicalMaterial({
+          color: "blue",
+          transmission: 1,
+          roughness: 0,
+          ior: 1.7,
+          thickness: 0.5,
+          clearcoat: 1,
+          envMap: em,
+          side: 2,
+          transparent: true,
+          opacity: 1,
+          sheen: 1,
+          sheenRoughness: 1,
+          sheenColor: 0xffffff
+        });
+
+        //MESH
+        const object_0 = new THREE.Mesh(geometry_0, material_0);
+        scene.add(object_0);
+        const object_1 = new THREE.Mesh(geometry_1, material_1);
+        scene.add(object_1);
+        const object_2 = new THREE.Mesh(geometry_2, material_2);
+        scene.add(object_2);
+
+        let btnPlay = document.getElementById("play");
+        let btnStop = document.getElementById("stop");
+        let A;
+        let playerState = "stopped";
+
+        const listener = new THREE.AudioListener();
+        camera.add(listener);
+        const sound = new THREE.Audio(listener);
+
+        const audioLoader = new THREE.AudioLoader();
+
+        audioLoader.load("sounds/Era.mp3", function (buffer) {
+          sound.setBuffer(buffer);
+          sound.setLoop(true);
+          sound.setVolume(0.5);
+          sound.offset = 5;
+          btnPlay.addEventListener("click", function () {
+            if (playerState == "stopped") {
+              sound.play();
+              animate();
+              playerState = "playing";
+            }
+          });
+          btnStop.addEventListener("click", function () {
+            if (playerState == "playing") {
+              sound.pause();
+              cancelAnimationFrame(A);
+              playerState = "stopped";
+            }
+          });
+        });
+
+        //////////////////////////////////////////////////////////
+
+        //
+
+        //RESIZE
+        function onWindowResize() {
+          camera.aspect = c.offsetWidth / c.offsetHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(c.offsetWidth, c.offsetHeight);
+        }
+        window.addEventListener("resize", onWindowResize);
+
+        //CONTROLS
+        const controls = new OrbitControls(camera, renderer.domElement);
+
+        //AXESHELPER
+        const axesHelper = new THREE.AxesHelper(100);
+        //scene.add(axesHelper);
+
+        //ANIMATE
+        function animate() {
+          A = requestAnimationFrame(animate);
+          object_0.rotation.x -= 0.01;
+          object_0.rotation.y -= 0.01;
+          object_1.rotation.x += 0.01;
+          object_1.rotation.y += 0.01;
+          object_2.rotation.x += 0.01;
+          object_2.rotation.y += 0.01;
+          renderer.render(scene, camera);
+        }
+        function stopAnimation() {
+          requestAnimationFrame(stopAnimation);
+          renderer.render(scene, camera);
+        }
+        stopAnimation();
+      }
+      main();
+    </script>
+  </body>
+</html>
