@@ -65,9 +65,13 @@
     <div id="perspektiva">Perspektiva</div>
     <div id="c"></div>
     <script type="module">
-      import * as THREE from "three";
-      import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-      import { MeshPhysicalMaterial } from "https://unpkg.com/three@0.158.0/src/materials/MeshPhysicalMaterial.js";
+      //import * as THREE from "three";
+      //import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+      //import { MeshPhysicalMaterial } from "https://unpkg.com/three@0.158.0/src/materials/MeshPhysicalMaterial.js";
+      
+      import * as THREE from "/js/Three/three.module.js";
+      import { OrbitControls } from "/js/Three/OrbitControls.js";
+      
       let fullScreen = document.getElementById("fullscreen");
       let elem = document.getElementById("c");
       fullScreen.addEventListener("click", function () {
@@ -90,8 +94,8 @@
           //alpha: true,
           antialias: true,
         });
-        renderer.useLegacyLights = true;
-        //renderer.physicallyCorrectLights = true;
+        //renderer.useLegacyLights = true;
+        renderer.physicallyCorrectLights = true;
         renderer.setSize(c.offsetWidth, c.offsetHeight);
         c.appendChild(renderer.domElement);
 
