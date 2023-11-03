@@ -8,8 +8,11 @@ body {
   background-color: darkgray;
 }
 
-.fb-share-button {
-  background-color: rgba(0, 0, 0, 0);
+#c {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background-color: red;
 }
 
 #nav-div {
@@ -30,6 +33,10 @@ body {
   color: #ffffff;
   margin-top: 1%;
   font-size: 120%;
+}
+
+.fb-share-button {
+  background-color: rgba(0, 0, 0, 0);
 }
 
 #nav-div button:last-child {
